@@ -548,7 +548,7 @@ namespace GetTauinTargetHeight
             }
             return intNewIdNum;
         }
-
+        
         int intColumnsNumInTotal = 0;
         private async Task GetShear1(DataTable dataTable) 
         {
@@ -580,21 +580,21 @@ namespace GetTauinTargetHeight
                             listDispData.Add(double.Parse(dataTable.Rows[j][i - 2].ToString()));
                             listShearForceData.Add(double.Parse(dataTable.Rows[j][i - 1].ToString()));
 
-                            if (listDispData[j-5] > 0 & double.Parse(dataTable.Rows[j][i].ToString()) < 0)
+                            if (listDispData[j-5] > 0 & double.Parse(dataTable.Rows[j][i].ToString()) >= 0)///変位が正→せん断応力度正値を無視
                             {
                                 listSumTau.Add(0);
                             }
-                            else if (listDispData[j-5] > 0 & double.Parse(dataTable.Rows[j][i].ToString()) > 0)
+                            else if (listDispData[j-5] > 0 & double.Parse(dataTable.Rows[j][i].ToString()) < 0)
                             {
-                                listSumTau.Add(-1 *listLengthofTargetElement[i-3]* double.Parse(dataTable.Rows[i][j].ToString()) * double.Parse(dataTable.Rows[j][i].ToString()));
+                                listSumTau.Add(-1 * listLengthofTargetElement[i - 3] * listThicknessofTargetElement[i - 3] * double.Parse(dataTable.Rows[j][i].ToString()));
                             }
-                            else if (listDispData[j-5] < 0 & double.Parse(dataTable.Rows[j][i].ToString()) < 0)
+                            else if (listDispData[j-5] < 0 & double.Parse(dataTable.Rows[j][i].ToString()) <= 0)
                             {
                                 listSumTau.Add(0);
                             }
                             else if (listDispData[j-5] < 0 & double.Parse(dataTable.Rows[j][i].ToString()) > 0)
                             {
-                                listSumTau.Add(listLengthofTargetElement[i - 3]*double.Parse(dataTable.Rows[j][i].ToString())); ;
+                                listSumTau.Add(listLengthofTargetElement[i - 3] * listThicknessofTargetElement[i - 3] * double.Parse(dataTable.Rows[j][i].ToString()));
                             }
                         }
 
@@ -705,18 +705,33 @@ namespace GetTauinTargetHeight
                             }
                         }
 
-                        dblSumOfLength += listLengthofTargetElement[i - 3];
                         intColumnsCountOfNegativeDisp = intColumnsNumInTotal+1;
                         intColumnsNumInTotal += 3;
                     }
                     else
                     {
-                        for (int j = 5; j < dataTable.Rows.Count; j++)
+                        for (int j = 5; j < dataTable.Rows.Count; j++)///
                         {
-                            listTauinThisElement.Add(listLengthofTargetElement[i - 3]*double.Parse(dataTable.Rows[j][i].ToString()));
+
+                            if (listDispData[j - 5] > 0 & double.Parse(dataTable.Rows[j][i].ToString()) >= 0)///変位が正→せん断応力度正値を無視
+                            {
+                                listTauinThisElement.Add(0);
+                            }
+                            else if (listDispData[j - 5] > 0 & double.Parse(dataTable.Rows[j][i].ToString()) < 0)
+                            {
+                                listTauinThisElement.Add(-1 * listLengthofTargetElement[i - 3] * listThicknessofTargetElement[i - 3] * double.Parse(dataTable.Rows[j][i].ToString()));
+                            }
+                            else if (listDispData[j - 5] < 0 & double.Parse(dataTable.Rows[j][i].ToString()) <= 0)
+                            {
+                                listTauinThisElement.Add(0);
+                            }
+                            else if (listDispData[j - 5] < 0 & double.Parse(dataTable.Rows[j][i].ToString()) > 0)
+                            {
+                                listTauinThisElement.Add(listLengthofTargetElement[i - 3] * listThicknessofTargetElement[i - 3] * double.Parse(dataTable.Rows[j][i].ToString()));
+                            }
                         }
 
-                        if ((double.Parse(dataTable.Rows[2][i].ToString()) != 200 & dblTypeOfFormerElement != double.Parse(dataTable.Rows[1][i].ToString()) & dblThicknessOfFormerElement != 200))///要素が変わった場合
+                        if ((double.Parse(dataTable.Rows[2][i].ToString()) != 200 & dblTypeOfFormerElement != double.Parse(dataTable.Rows[1][i].ToString()) & dblThicknessOfFormerElement != 200))///壁板要素(thickness=80→thickness=!200)のうち，要素番号が変わったらメッセージ
                         {
                             var result = MessageBox.Show($"要素番号が変化しました。現在と異なるグループですか？" +
                                 $"\r\n要素番号{dblNumOfFormerElement}→{double.Parse(dataTable.Rows[0][i].ToString())}" +
@@ -748,6 +763,7 @@ namespace GetTauinTargetHeight
                                         }
 
                                         drTmpP[tmpDataTableP.Columns.Count] = listSumTau[j]/ dblSumOfLength;
+                                        listSumTau[j] = 0;
                                         PositiveTau.Rows.Add(drTmpP);
                                     }
                                     else
@@ -758,6 +774,7 @@ namespace GetTauinTargetHeight
                                         }
 
                                         drTmpN[tmpDataTableN.Columns.Count] = listSumTau[j] / dblSumOfLength;
+                                        listSumTau[j] = 0;
                                         NegativeTau.Rows.Add(drTmpN);
                                     }
                                 }
@@ -791,6 +808,7 @@ namespace GetTauinTargetHeight
                                     }
 
                                     drTmpP[tmpDataTableP.Columns.Count] = listSumTau[j]/ dblSumOfLength;
+                                    listSumTau[j] = 0;
                                     PositiveTau.Rows.Add(drTmpP);
                                 }
                                 else
@@ -801,6 +819,7 @@ namespace GetTauinTargetHeight
                                     }
 
                                     drTmpN[tmpDataTableN.Columns.Count] = listSumTau[j]/ dblSumOfLength;
+                                    listSumTau[j] = 0;
                                     NegativeTau.Rows.Add(drTmpN);
                                 }
                             }
@@ -810,23 +829,6 @@ namespace GetTauinTargetHeight
 
                         for (int j = 0; j < listSumTau.Count; j++)/// 共通の作業
                         {
-                            if (listDispData[j] > 0 & -1 * listTauinThisElement[j] < 0)
-                            {
-                                listTauinThisElement[j] = 0;
-                            }
-                            else if (listDispData[j] > 0 & -1 * listTauinThisElement[j] > 0) 
-                            {
-                                listTauinThisElement[j] = -1 * listTauinThisElement[j];
-                            }
-                            else if (listDispData[j] < 0 & listTauinThisElement[j] < 0)
-                            {
-                                listTauinThisElement[j] = 0;
-                            }
-                            else if (listDispData[j] < 0 & listTauinThisElement[j] > 0)
-                            {
-                                listTauinThisElement[j] = listTauinThisElement[j];
-                            }
-
                             listSumTau[j] = listSumTau[j] + listTauinThisElement[j];
                         }
 
