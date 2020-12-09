@@ -398,7 +398,7 @@ namespace GetTauinTargetHeight
             DataTable1.Columns.Add("StepNum");
             DataTable1.Columns.Add("Disp");
             DataTable1.Columns.Add("ShearForce");
-            for (int i = 0; i < listTargetElement.Count - 1; i++) 
+            for (int i = 0; i < listTargetElement.Count ; i++) 
             {
                 DataTable1.Columns.Add(listTargetElement[i].ToString());
             }
@@ -410,7 +410,7 @@ namespace GetTauinTargetHeight
             DataRow InsertDataOfThickness = DataTable1.NewRow();
             DataRow InsertDataOfLength = DataTable1.NewRow();
 
-            for (int i = 0; i < listTargetElement.Count - 1; i++)
+            for (int i = 0; i < listTargetElement.Count ; i++)
             {
                 InsertDataOfElementNum[i + 3] = listTargetElement[i];
                 InsertDataOfElementType[i+3] = listTypeofTargetElement[i];
@@ -477,7 +477,7 @@ namespace GetTauinTargetHeight
                         }
                         else if (strLine.Contains("L O A D I N G    S T E P S"))
                         {
-                            for (int i = 0; i < listTmpData.Count - 1; i++)
+                            for (int i = 0; i < listTmpData.Count ; i++)
                             {
                                 InsertData[i] = listTmpData[i];
                             }
