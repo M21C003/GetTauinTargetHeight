@@ -31,9 +31,9 @@ namespace GetTauinTargetHeight
         {
             InitializeComponent();
 
-            SelectSaveData.Items.Add("MMtoRad.");
-            SelectSaveData.Items.Add("PeekData");
-            SelectSaveData.Items.Add("FFO");
+            SelectSaveData.Items.Add("All Data in Target Height.");
+            SelectSaveData.Items.Add("PositiveData");
+            SelectSaveData.Items.Add("NegativeData");
 
             Button_SaveFile.IsEnabled = false;
 
@@ -621,7 +621,7 @@ namespace GetTauinTargetHeight
                                     intCountPositive += 1;
                                     if (intCountPositive > tmpDataTableP.Rows.Count) 
                                     {
-                                        PositiveTau.Rows.Add();
+                                        tmpDataTableP.Rows.Add();
                                     }
                                 }
                                 else
@@ -630,7 +630,7 @@ namespace GetTauinTargetHeight
                                     intCountNegative += 1;
                                     if (intCountNegative > tmpDataTableN.Rows.Count)
                                     {
-                                        NegativeTau.Rows.Add();
+                                        tmpDataTableN.Rows.Add();
                                     }
                                 }
                             }
